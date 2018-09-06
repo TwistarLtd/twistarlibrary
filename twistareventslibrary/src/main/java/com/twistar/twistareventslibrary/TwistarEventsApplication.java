@@ -1,7 +1,12 @@
 package com.twistar.twistareventslibrary;
 
 import android.app.Application;
+import android.content.Context;
+import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.serialport.SerialPort;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import java.io.File;
@@ -10,21 +15,39 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.InvalidParameterException;
 
-public class TwistarEventsApplication extends Application {
+public class TwistarEventsApplication  {
 
     private static final String TAG = TwistarEventsApplication.class.getSimpleName();
     protected OutputStream mOutputStream;
     private InputStream mInputStream;
     private ReadThread mReadThread;
-
+    private TwisterEventsCallback mTwisterEventsCallback;
     private SerialPort mSerialPort = null;
     private long mFirstTimeStamp;
+    private static TwistarEventsApplication instance = null;
 
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+
+    public void onCreate(Context context) {
+       // super.onCreate(savedInstanceState, persistentState);
+        Log.d(TAG, "onCreate: ");
+        instance = this;
         runSerialThread();
+
+    }
+
+
+    public static TwistarEventsApplication getContext() {
+        return instance;
+    }
+
+    /**
+     * Set interface to get callback form thread
+     *
+     * @param twisterEventsCallback
+     */
+    public void setTwisterEventsListner(TwisterEventsCallback twisterEventsCallback) {
+        mTwisterEventsCallback = twisterEventsCallback;
     }
 
     public void runSerialThread() {
@@ -76,7 +99,7 @@ public class TwistarEventsApplication extends Application {
         public void run() {
             super.run();
 
-            if (getApplicationContext() == null) {
+            if (instance == null) {
                 interrupt();
 //                closeSerialPort();
             }
@@ -95,32 +118,29 @@ public class TwistarEventsApplication extends Application {
                             Log.d(TAG, "run: ");
                             if (data < 32 || data > 127) {
                                 int requestCode = Integer.parseInt(Integer.toHexString(data));
-
-                                if (requestCode == 1) {
-                                    mFirstTimeStamp = System.currentTimeMillis();
-                                }
-                                if (requestCode == 2 && (System.currentTimeMillis() - mFirstTimeStamp) >= 1500) {
-                                    //   if (mTwisterEventsCallback != null)
-                                    Log.d(TAG, "run: backpress");
-                                    // mTwisterEventsCallback.onEventReceived(AppConstants.TWISTER_HARDWARE_EVENTS.BACK_PRESS);
-                                } else {
-                                    Log.d(TAG, "run: "+ requestCode);
-/*
-                                    if (mTwisterEventsCallback != null) {
-                                        mTwisterEventsCallback.onEventReceived(requestCode);
+                                if (mTwisterEventsCallback != null) {
+                                    if (requestCode == 1) {
+                                        mFirstTimeStamp = System.currentTimeMillis();
                                     }
-*/
+                                    if (requestCode == 2 && (System.currentTimeMillis() - mFirstTimeStamp) >= 1500) {
+                                        if (mTwisterEventsCallback != null)
+                                            mTwisterEventsCallback.onEventReceived(Constants.TWISTER_HARDWARE_EVENTS.BACK_PRESS);
+                                    } else {
+                                        if (mTwisterEventsCallback != null) {
+                                            mTwisterEventsCallback.onEventReceived(requestCode);
+                                        }
+                                    }
                                 }
                             } else {
                                 // Unknown EVENT
-                                Log.d(TAG, "run: unknown 0");
-//                                    mTwisterEventsCallback.onEventReceived(AppConstants.TWISTER_HARDWARE_EVENTS.UNKNOWN_EVENT);
+                                if (mTwisterEventsCallback != null)
+                                    mTwisterEventsCallback.onEventReceived(Constants.TWISTER_HARDWARE_EVENTS.UNKNOWN_EVENT);
                             }
                         }
                     } else {
                         // Unknown EVENT
-                        Log.d(TAG, "run: unknown 1");
-//                            mTwisterEventsCallback.onEventReceived(AppConstants.TWISTER_HARDWARE_EVENTS.UNKNOWN_EVENT);
+                        if (mTwisterEventsCallback != null)
+                            mTwisterEventsCallback.onEventReceived(Constants.TWISTER_HARDWARE_EVENTS.UNKNOWN_EVENT);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
