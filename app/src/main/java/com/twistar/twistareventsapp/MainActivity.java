@@ -25,14 +25,31 @@ public class MainActivity extends AppCompatActivity implements TwisterEventsCall
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TwistarEventsApplication twistarEventsApplication = new TwistarEventsApplication();
-        twistarEventsApplication.onCreate(this);
-        twistarEventsApplication.setTwisterEventsListner(this);
+        new TwistarEventsApplication(this,this);
     }
 
+    @Override
+    public void onTwistLeftEventReceived() {
+        Log.d(TAG, "onTwistLeftEventReceived: ");
+    }
 
     @Override
-    public void onEventReceived(int requestCode) {
-        Log.d(TAG, "onEventReceived: "+requestCode);
+    public void onTwistRightEventReceived() {
+        Log.d(TAG, "onTwistRightEventReceived: ");
+    }
+
+    @Override
+    public void onButtonPressEventReceived() {
+        Log.d(TAG, "onButtonPressEventReceived: ");
+    }
+
+    @Override
+    public void onButtonReleaseEventReceived() {
+        Log.d(TAG, "onButtonReleaseEventReceived: ");
+    }
+
+    @Override
+    public void onUnknownEventReceived() {
+        Log.d(TAG, "onUnknownEventReceived: ");
     }
 }

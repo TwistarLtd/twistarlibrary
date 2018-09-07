@@ -15,7 +15,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.InvalidParameterException;
 
-public class TwistarEventsApplication  {
+public class TwistarEventsApplication {
 
     private static final String TAG = TwistarEventsApplication.class.getSimpleName();
     protected OutputStream mOutputStream;
@@ -23,31 +23,13 @@ public class TwistarEventsApplication  {
     private ReadThread mReadThread;
     private TwisterEventsCallback mTwisterEventsCallback;
     private SerialPort mSerialPort = null;
-    private long mFirstTimeStamp;
-    private static TwistarEventsApplication instance = null;
+    private Context instance = null;
 
 
-
-    public void onCreate(Context context) {
-       // super.onCreate(savedInstanceState, persistentState);
-        Log.d(TAG, "onCreate: ");
-        instance = this;
-        runSerialThread();
-
-    }
-
-
-    public static TwistarEventsApplication getContext() {
-        return instance;
-    }
-
-    /**
-     * Set interface to get callback form thread
-     *
-     * @param twisterEventsCallback
-     */
-    public void setTwisterEventsListner(TwisterEventsCallback twisterEventsCallback) {
+    public TwistarEventsApplication(Context context, TwisterEventsCallback twisterEventsCallback) {
+        instance = context;
         mTwisterEventsCallback = twisterEventsCallback;
+        runSerialThread();
     }
 
     public void runSerialThread() {
@@ -72,27 +54,14 @@ public class TwistarEventsApplication  {
             throws SecurityException, IOException, InvalidParameterException {
         if (mSerialPort == null) {
             /* Read serial port parameters */
-
-            // TODO
-        /*    String packageName = getPackageName();
-            SharedPreferences sp = getSharedPreferences(packageName + "_preferences", MODE_PRIVATE);
-            String path = sp.getString("DEVICE", "");
-            int baudrate = Integer.decode(sp.getString("BAUDRATE", "-1"));
-
-			*//* Check parameters *//*
-            if ((path.length() == 0) || (baudrate == -1)) {
-                throw new InvalidParameterException();
-            }*/
-
-            /* Open the serial port */
-            // @manish PORT and DEVICE are STATIC
             mSerialPort = new SerialPort(new File("/dev/ttyMT1"), 115200, 0);
         }
         return mSerialPort;
     }
 
-
-
+    /**
+     * This thread is used to read the serial data from the device and parsing it to call the events.
+     */
     private class ReadThread extends Thread {
 
         @Override
@@ -101,7 +70,6 @@ public class TwistarEventsApplication  {
 
             if (instance == null) {
                 interrupt();
-//                closeSerialPort();
             }
 
             while (!isInterrupted()) {
@@ -119,33 +87,51 @@ public class TwistarEventsApplication  {
                             if (data < 32 || data > 127) {
                                 int requestCode = Integer.parseInt(Integer.toHexString(data));
                                 if (mTwisterEventsCallback != null) {
-                                    if (requestCode == 1) {
-                                        mFirstTimeStamp = System.currentTimeMillis();
-                                    }
-                                    if (requestCode == 2 && (System.currentTimeMillis() - mFirstTimeStamp) >= 1500) {
-                                        if (mTwisterEventsCallback != null)
-                                            mTwisterEventsCallback.onEventReceived(Constants.TWISTER_HARDWARE_EVENTS.BACK_PRESS);
-                                    } else {
-                                        if (mTwisterEventsCallback != null) {
-                                            mTwisterEventsCallback.onEventReceived(requestCode);
-                                        }
-                                    }
+                                    sendEventsByRequestCode(requestCode);
                                 }
                             } else {
                                 // Unknown EVENT
                                 if (mTwisterEventsCallback != null)
-                                    mTwisterEventsCallback.onEventReceived(Constants.TWISTER_HARDWARE_EVENTS.UNKNOWN_EVENT);
+                                    mTwisterEventsCallback.onUnknownEventReceived();
                             }
                         }
                     } else {
                         // Unknown EVENT
                         if (mTwisterEventsCallback != null)
-                            mTwisterEventsCallback.onEventReceived(Constants.TWISTER_HARDWARE_EVENTS.UNKNOWN_EVENT);
+                            mTwisterEventsCallback.onUnknownEventReceived();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                     return;
                 }
+            }
+        }
+    }
+
+    /**
+     * This function can manage the events depending upon the request code.
+     *
+     * @param requestCode It is the first argument and used to send callbacks depending upon its value.
+     */
+    private void sendEventsByRequestCode(int requestCode) {
+        if (mTwisterEventsCallback != null) {
+            switch (requestCode) {
+                case Constants.TWISTER_HARDWARE_EVENTS.TWIST_LEFT:
+                    mTwisterEventsCallback.onTwistLeftEventReceived();
+                    break;
+                case Constants.TWISTER_HARDWARE_EVENTS.TWIST_RIGHT:
+                    mTwisterEventsCallback.onTwistRightEventReceived();
+                    break;
+                case Constants.TWISTER_HARDWARE_EVENTS.BUTTON_PRESS:
+                    mTwisterEventsCallback.onButtonPressEventReceived();
+                    break;
+                case Constants.TWISTER_HARDWARE_EVENTS.BUTTON_RELEASE:
+                    mTwisterEventsCallback.onButtonReleaseEventReceived();
+                    break;
+                case Constants.TWISTER_HARDWARE_EVENTS.UNKNOWN_EVENT:
+                    mTwisterEventsCallback.onUnknownEventReceived();
+                    break;
+
             }
         }
     }
