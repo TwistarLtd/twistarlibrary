@@ -1,30 +1,6 @@
 apply plugin: 'com.android.library'
-
-ext {
-    bintrayRepo = 'twistareventslibrary'
-    bintrayName = 'twistareventslibrary'   // Has to be same as your library module name
-
-    publishedGroupId = 'com.twistar.twistareventslibrary'
-    libraryName = 'TwistarEvents'
-    artifact = 'twistareventslibrary'     // Has to be same as your library module name
-
-    libraryDescription = 'This library is used to control the Twistar device events'
-
-    // Your github repo link
-    siteUrl = 'https://github.com/labhyaSG/twistarevents'
-    gitUrl = 'https://github.com/labhyaSG/twistarevents'
-    githubRepository= 'labhyaSG/twistarevents'
-
-    libraryVersion = '1.0'
-
-    developerId = 'studiographene'
-    developerName = 'Labhya Sharma'
-    developerEmail = 'labhya@studiographene.com'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
-}
+apply plugin: 'com.github.dcendents.android-maven'
+group='com.github.labhyasharma'
 
 android {
     compileSdkVersion 28
@@ -47,18 +23,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
 
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:28.0.0-rc02'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation project(':serialport')
 }
 
-apply from: 'https://raw.githubusercontent.com/nisrulz/JCenter/master/installv1.gradle'
-apply from: 'https://raw.githubusercontent.com/nisrulz/JCenter/master/bintrayv1.gradle'
