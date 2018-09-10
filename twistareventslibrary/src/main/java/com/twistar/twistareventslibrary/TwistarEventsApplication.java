@@ -1,12 +1,7 @@
 package com.twistar.twistareventslibrary;
 
-import android.app.Application;
 import android.content.Context;
-import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.serialport.SerialPort;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import java.io.File;
@@ -32,6 +27,10 @@ public class TwistarEventsApplication {
         runSerialThread();
     }
 
+    /**
+     * Here creating the serial port and
+     * stating the thread to read the serial data.
+     */
     public void runSerialThread() {
         try {
             mSerialPort = getSerialPort();
@@ -50,6 +49,11 @@ public class TwistarEventsApplication {
         }
     }
 
+    /**
+     * Here opening the serial port at certain baudrate.
+     *
+     * @return SerialPort It is the object of SerialPort class to read the data from the device/
+     */
     public SerialPort getSerialPort()
             throws SecurityException, IOException, InvalidParameterException {
         if (mSerialPort == null) {
