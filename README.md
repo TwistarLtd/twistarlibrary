@@ -3,7 +3,7 @@ This library is used to control the Twistar device events. After implementing th
 ![alt text](http://www.twistar.co/content/device-variant/maple-white-ceramic/oblique_maple.png)
 
 # Motivation
-This library is developed for the developers who want to work on Twistar Device and want to get its PUSH and TWIST events callback.
+This library is developed for the developers who want to work on Twistar Device and wants to get its PUSH and TWIST events callback.
 
 # Installation
 To get a Git project into your build:
