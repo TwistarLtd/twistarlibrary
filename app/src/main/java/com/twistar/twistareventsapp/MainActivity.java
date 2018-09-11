@@ -10,12 +10,15 @@ import com.twistar.twistareventslibrary.TwisterEventsCallback;
 public class MainActivity extends AppCompatActivity implements TwisterEventsCallback {
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private TwistarEventsApplication twistarEventsApplication;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new TwistarEventsApplication(this);
+        twistarEventsApplication = new TwistarEventsApplication(this);
+        twistarEventsApplication.setmTwisterEventsCallback(this);
     }
 
     @Override

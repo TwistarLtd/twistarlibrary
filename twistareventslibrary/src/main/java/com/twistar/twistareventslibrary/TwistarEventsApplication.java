@@ -23,8 +23,12 @@ public class TwistarEventsApplication {
 
     public TwistarEventsApplication(Context context) {
         instance = context;
-        mTwisterEventsCallback = (TwisterEventsCallback)context;
+
         runSerialThread();
+    }
+
+    public void setmTwisterEventsCallback(TwisterEventsCallback mTwisterEventsCallback){
+        this.mTwisterEventsCallback = mTwisterEventsCallback;
     }
 
     /**
