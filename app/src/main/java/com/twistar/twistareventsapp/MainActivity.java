@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity implements TwisterEventsCall
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new TwistarEventsApplication(this, this);
+        new TwistarEventsApplication(this);
     }
 
     @Override

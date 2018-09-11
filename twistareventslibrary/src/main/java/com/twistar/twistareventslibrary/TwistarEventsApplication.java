@@ -21,9 +21,9 @@ public class TwistarEventsApplication {
     private Context instance = null;
 
 
-    public TwistarEventsApplication(Context context, TwisterEventsCallback twisterEventsCallback) {
+    public TwistarEventsApplication(Context context) {
         instance = context;
-        mTwisterEventsCallback = twisterEventsCallback;
+        mTwisterEventsCallback = (TwisterEventsCallback)context;
         runSerialThread();
     }
 
