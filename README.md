@@ -24,7 +24,7 @@ allprojects {
   
   ```
   dependencies {
-	        implementation 'com.github.TwistarApp:twistareventslibrary:1.0.4'
+	        implementation 'com.github.TwistarLtd:twistareventslibrary:1.0.4'
 	}
   ```
 ### Maven
@@ -44,7 +44,7 @@ allprojects {
   
   ```
   <dependency>
-	    <groupId>com.github.TwistarApp</groupId>
+	    <groupId>com.github.TwistarLtd</groupId>
 	    <artifactId>twistareventslibrary</artifactId>
 	    <version>1.0.4</version>
 	</dependency>
